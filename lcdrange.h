@@ -15,6 +15,7 @@ public:
 
 public slots:
     void setValue(int);
+    void setRange(int minVal,int maxVal);
 
 signals:
     void valueChanged(int);

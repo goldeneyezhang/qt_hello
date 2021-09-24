@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
     MyWidget *w = new MyWidget(window);
     //w->show();
-
+    w->setGeometry(100,100,500,355);
     window->show();
     return a.exec();
 }
