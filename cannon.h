@@ -18,6 +18,10 @@ public:
 public slots:
     void setAngle(int degrees);
     void setForce(int newton);
+    void shoot();
+
+private slots:
+    void moveShot();
 
 signals:
     void angleChanged(int);
@@ -27,10 +31,18 @@ protected:
     void paintEvent(QPaintEvent *);
 
 private:
+    void paintShot(QPainter *);
+    void paintCannon(QPainter *);
     QRect cannonRect() const;
+    QRect shotRect() const;
 
     int ang;
     int f;
+
+    int timerCount;
+    QTimer *autoShootTimer;
+    float shoot_ang;
+    float shoot_f;
 };
 
 #endif // CANNON_H
