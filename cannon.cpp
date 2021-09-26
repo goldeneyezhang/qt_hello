@@ -1,13 +1,17 @@
 #include "cannon.h"
 #include <QPainter>
+#include <QPixmap>
+#include <QPaintEvent>
 
-Cannon::Cannon(QWidget *parent) : QWidget(parent)
+CannonField::CannonField(QWidget *parent) : QWidget(parent)
 {
     ang = 45;
-    setPalette(QPalette(QColor(75,250,200)));
+    f = 0;
+    setPalette(QPalette(QColor(250,250,200)));
+    setAutoFillBackground(true);
 }
 
-void Cannon::setAngle(int degrees)
+void CannonField::setAngle(int degrees)
 {
     if(degrees < 5)
         degrees = 5;
@@ -16,28 +20,50 @@ void Cannon::setAngle(int degrees)
     if(ang == degrees)
         return;
     ang = degrees;
-    repaint();
+    repaint( cannonRect());
     emit angleChanged(ang);
 }
 
-void Cannon::paintEvent(QPaintEvent *)
+void CannonField::setForce(int newton)
 {
-    QString s = "Angle = "+QString::number(ang);
-    QPainter p(this);
-    QBrush *brush = new QBrush();
-    brush->setColor(Qt::GlobalColor::blue);
+    if(newton < 0)
+        newton = 0;
+    if(f == newton)
+        return;
+    f = newton;
+    emit forceChanged(f);
+}
 
-    p.setBrush(*brush);
-    p.setPen(Qt::PenStyle::DotLine);
+void CannonField::paintEvent(QPaintEvent *e)
+{
+   if(!e->rect().intersects(cannonRect()))
+        return;
+    QRect cr =cannonRect();
+    QPixmap pix(cr.size());
+    pix.fill(Qt::white);
 
-    p.translate(0,rect().bottom());
+     QPainter p(&pix);
+
+    p.setBrush(Qt::blue);
+    p.setPen(Qt::PenStyle::NoPen);
+
+    p.translate(0,pix.height() - 1);
     p.drawPie(QRect(-35,-35,70,70),0,90*16);
     p.rotate(-ang);
     p.drawRect(QRect(33,-4,15,8));
-    p.drawText(200,200,s);
+    p.end();
+
+    p.begin(this);
+    p.drawPixmap(cr.topLeft(),pix);
 }
 
-QSizePolicy Cannon::sizePolicy() const
+QRect CannonField::cannonRect() const
+{
+    QRect r(0,0,50,50);
+    r.moveBottomLeft(rect().bottomLeft());
+    return r;
+}
+QSizePolicy CannonField::sizePolicy() const
 {
     return QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 }
