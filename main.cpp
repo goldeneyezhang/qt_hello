@@ -9,6 +9,7 @@
 
 int main(int argc, char *argv[])
 {
+    QApplication::setColorSpec( QApplication::CustomColor );
     QApplication a(argc, argv);
     QWidget *window = new QWidget;
     QPushButton *button1 = new QPushButton("One");
