@@ -56,5 +56,5 @@ MyWidget::MyWidget(QWidget *parent) : QWidget(parent)
     leftBox->addLayout(force,2);
 
     angle->setValue(60);
-    cannon->setAngle(25);
+    force->setValue(25);
 }
