@@ -2,8 +2,21 @@
 
 #include <QSlider>
 #include <QLCDNumber>
+#include <QLabel>
+#include <QString>
 
 LCDRange::LCDRange(QWidget *parent):QVBoxLayout(parent)
+{
+    init();
+}
+
+LCDRange::LCDRange(const char *s, QWidget *parent):QVBoxLayout(parent)
+{
+    init();
+    setText(s);
+}
+
+void LCDRange::init()
 {
     QLCDNumber *lcd = new QLCDNumber(2);
     slider = new QSlider(Qt::Orientation::Horizontal);
@@ -15,10 +28,8 @@ LCDRange::LCDRange(QWidget *parent):QVBoxLayout(parent)
     this->addWidget(slider);
 
     connect(slider,SIGNAL(valueChanged(int)),lcd,SLOT(display(int)));
-    connect( slider, SIGNAL(valueChanged(int)),SIGNAL(valueChanged(int)) );
-
+    connect( slider, SIGNAL(valueChanged(int)),SIGNAL(valueChanged(int)));
 }
-
 
 void LCDRange::setValue(int value)
 {
@@ -28,6 +39,11 @@ void LCDRange::setValue(int value)
 int LCDRange::value() const
 {
     return slider->value();
+}
+
+const QString LCDRange::text() const
+{
+    return label->text();
 }
 
 void LCDRange::setRange(int minVal,int maxVal)
@@ -40,4 +56,9 @@ void LCDRange::setRange(int minVal,int maxVal)
             return;
     }
     slider->setRange(minVal,maxVal);
+}
+
+void LCDRange::setText(const char *s)
+{
+    label->setText(s);
 }

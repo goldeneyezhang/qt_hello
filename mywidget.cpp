@@ -29,10 +29,10 @@ MyWidget::MyWidget(QWidget *parent) : QWidget(parent)
             grid->addLayout(lcdRange,r,c);
         }*/
 
-    LCDRange *angle = new LCDRange();
+    LCDRange *angle = new LCDRange("ANGLE");
     angle->setRange(5,70);
 
-    LCDRange *force = new LCDRange();
+    LCDRange *force = new LCDRange("FORCE");
     force->setRange(10,50);
 
 
