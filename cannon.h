@@ -32,7 +32,7 @@ protected:
 
 private:
     void paintShot(QPainter *);
-    void paintCannon(QPainter *);
+    void paintCannon(QPainter *,Qt::GlobalColor color);
     QRect cannonRect() const;
     QRect shotRect() const;
 

@@ -5,7 +5,7 @@
 #include <QTimer>
 
 #include <math.h>
-
+#include <QDebug>
 CannonField::CannonField(QWidget *parent) : QWidget(parent)
 {
     ang = 45;
@@ -31,6 +31,7 @@ void CannonField::setAngle(int degrees)
         return;
     ang = degrees;
     repaint( cannonRect());
+
     emit angleChanged(ang);
 }
 
@@ -66,6 +67,7 @@ void CannonField::moveShot()
     else
         r = r.united(QRegion(shotR));
     repaint(r);
+    repaint( cannonRect());
 }
 void CannonField::paintEvent(QPaintEvent *e)
 {
@@ -76,29 +78,42 @@ void CannonField::paintEvent(QPaintEvent *e)
     QRect updateR = e->rect();
     QPainter p (this);
 
-    if(updateR.intersects(cannonRect()))
-        paintCannon(&p);
+
+
+
     if(autoShootTimer->isActive() && updateR.intersects(shotRect()))
+    {
         paintShot(&p);
+    }
+    else if(updateR.intersects(cannonRect()))
+    {
+        if(autoShootTimer->isActive())
+            paintCannon(&p,Qt::green);
+        else
+            paintCannon(&p,Qt::blue);
+    }
+
 }
 
+const QRect barrelRect(33,-4,15,8);
 void CannonField::paintShot(QPainter *p)
 {
    p->setBrush(Qt::black);
    p->setPen(Qt::NoPen);
-   p->drawRect(shotRect());
+   //p->drawRect(shotRect());
+   p->drawEllipse(shotRect());
 }
 
-const QRect barrelRect(33,-4,15,8);
 
-void CannonField::paintCannon(QPainter *p)
+void CannonField::paintCannon(QPainter *p,Qt::GlobalColor color)
 {
+    qDebug() << color;
     QRect cr = cannonRect();
     QPixmap pix(cr.size());
     pix.fill(QColor(250,250,200));
 
     QPainter tmp(&pix);
-    tmp.setBrush(Qt::blue);
+    tmp.setBrush(color);
     tmp.setPen(Qt::NoPen);
 
     tmp.translate(0,pix.height() - 1);
