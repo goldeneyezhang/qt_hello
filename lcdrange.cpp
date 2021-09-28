@@ -19,13 +19,17 @@ LCDRange::LCDRange(const char *s, QWidget *parent):QVBoxLayout(parent)
 void LCDRange::init()
 {
     QLCDNumber *lcd = new QLCDNumber(2);
-    slider = new QSlider(Qt::Orientation::Horizontal);
+    slider = new QSlider(Qt::Horizontal);
 
     slider->setRange(0,99);
     slider->setValue(0);
 
+    label = new QLabel( " " );
+    label->setAlignment( Qt::AlignCenter );
+
     this->addWidget(lcd);
     this->addWidget(slider);
+    this->addWidget(label);
 
     connect(slider,SIGNAL(valueChanged(int)),lcd,SLOT(display(int)));
     connect( slider, SIGNAL(valueChanged(int)),SIGNAL(valueChanged(int)));
@@ -58,7 +62,7 @@ void LCDRange::setRange(int minVal,int maxVal)
     slider->setRange(minVal,maxVal);
 }
 
-void LCDRange::setText(const char *s)
+void LCDRange::setText(const QString s)
 {
     label->setText(s);
 }

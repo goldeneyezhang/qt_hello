@@ -19,7 +19,7 @@ public:
 public slots:
     void setValue(int);
     void setRange(int minVal,int maxVal);
-    void setText(const char *);
+    void setText(const QString);
 
 signals:
     void valueChanged(int);
