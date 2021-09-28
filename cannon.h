@@ -23,6 +23,7 @@ public slots:
 
 private slots:
     void moveShot();
+    void moveTarget();
 
 signals:
     void hit();
@@ -45,7 +46,11 @@ private:
     int f;
 
     int timerCount;
+    int targetCount;
+    int start;
+
     QTimer *autoShootTimer;
+    QTimer *autoMoveTimer;
     float shoot_ang;
     float shoot_f;
 

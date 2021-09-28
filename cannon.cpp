@@ -14,8 +14,16 @@ CannonField::CannonField(QWidget *parent) : QWidget(parent)
     ang = 45;
     f = 0;
     timerCount=0;
+    targetCount=0;
+    start = 0;
+
     autoShootTimer=new QTimer(this);
     connect(autoShootTimer,SIGNAL(timeout()),this,SLOT(moveShot()));
+
+    autoMoveTimer=new QTimer(this);
+    connect(autoMoveTimer,SIGNAL(timeout()),this,SLOT(moveTarget()));
+    autoMoveTimer->start(100);
+
     shoot_ang = 0;
     shoot_f = 0;
     target = QPoint(0,0);
@@ -23,6 +31,7 @@ CannonField::CannonField(QWidget *parent) : QWidget(parent)
     setPalette(QPalette(QColor(250,250,200)));
     setAutoFillBackground(true);
     newTarget();
+
 }
 
 void CannonField::setAngle(int degrees)
@@ -66,10 +75,16 @@ void CannonField::newTarget()
         first_time = false;
         QTime midnight(0,0,0);
         srand(midnight.secsTo(QTime::currentTime()));
+        start = rand();
     }
     QRegion r(targetRect());
-    target = QPoint(200+rand() % 190,10+rand() % 255);
+    target = QPoint(200+((start+ targetCount) % 190) ,10+start % 255);
     repaint(r.united(targetRect()));
+}
+void CannonField::moveTarget()
+{
+    targetCount++;
+    newTarget();
 }
 
 void CannonField::moveShot()
@@ -81,6 +96,8 @@ void CannonField::moveShot()
 
     if(shotR.intersects(targetRect())){
         autoShootTimer->stop();
+        targetCount = 0;
+        start = rand();
         emit hit();
     }
     else if(shotR.x() > width() || shotR.y() > height()){
@@ -129,7 +146,7 @@ void CannonField::paintShot(QPainter *p)
 void CannonField::paintTarget(QPainter *p)
 {
     p->setBrush(Qt::red);
-    p->setPen(Qt::black);
+    p->setPen(Qt::NoPen);
     p->drawRect(targetRect());
 }
 
