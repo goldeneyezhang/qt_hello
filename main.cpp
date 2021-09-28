@@ -6,6 +6,7 @@
 
 #include <mywidget.h>
 #include <lcdrange.h>
+#include "gamebrd.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,9 +28,11 @@ int main(int argc, char *argv[])
 
     //window->show();
 
-    MyWidget *w = new MyWidget(window);
+    //MyWidget *w = new MyWidget(window);
     //w->show();
-    w->setGeometry(100,100,500,355);
+   // w->setGeometry(100,100,500,355);
+   GameBoard *db = new GameBoard(window);
+   db->setGeometry(100,10,500,355);
     window->show();
     return a.exec();
 }

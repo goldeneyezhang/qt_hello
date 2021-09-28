@@ -11,8 +11,8 @@
 
 CannonField::CannonField(QWidget *parent) : QWidget(parent)
 {
-    ang = 45;
-    f = 0;
+    ang = 25;
+    f = 10;
     timerCount=0;
     targetCount=0;
     start = 0;
@@ -27,7 +27,7 @@ CannonField::CannonField(QWidget *parent) : QWidget(parent)
     shoot_ang = 0;
     shoot_f = 0;
     target = QPoint(0,0);
-
+    gameEnded = false;
     setPalette(QPalette(QColor(250,250,200)));
     setAutoFillBackground(true);
     newTarget();
@@ -60,12 +60,13 @@ void CannonField::setForce(int newton)
 
 void CannonField::shoot()
 {
-    if(autoShootTimer->isActive())
+    if(isShooting())
         return;
     timerCount = 0;
     shoot_ang = ang;
     shoot_f = f;
     autoShootTimer->start(50);
+    emit canShoot(false);
 }
 
 void CannonField::newTarget()
@@ -80,6 +81,25 @@ void CannonField::newTarget()
     QRegion r(targetRect());
     target = QPoint(200+((start+ targetCount) % 190) ,10+start % 255);
     repaint(r.united(targetRect()));
+}
+
+void CannonField::setGameOver()
+{
+    if(gameEnded)
+        return;
+    if(isShooting())
+        autoShootTimer->stop();
+    gameEnded=true;
+    repaint();
+}
+
+void CannonField::restartGame()
+{
+    if(isShooting())
+        autoShootTimer->stop();
+    gameEnded = false;
+    repaint();
+    emit canShoot(true);
 }
 void CannonField::moveTarget()
 {
@@ -99,10 +119,12 @@ void CannonField::moveShot()
         targetCount = 0;
         start = rand();
         emit hit();
+        emit canShoot(true);
     }
     else if(shotR.x() > width() || shotR.y() > height()){
         autoShootTimer->stop();
         emit missed();
+        emit canShoot(true);
     }
     else {
         r = r.united(QRegion(shotR));
@@ -119,7 +141,13 @@ void CannonField::paintEvent(QPaintEvent *e)
     QRect updateR = e->rect();
     QPainter p (this);
 
-    if(autoShootTimer->isActive() && updateR.intersects(shotRect()))
+    if(gameEnded){
+        p.setPen(Qt::black);
+        p.setFont(QFont("Courier",48,QFont::Bold));
+        p.drawText(rect(),Qt::AlignCenter,"Game Over");
+    }
+
+    if(isShooting() && updateR.intersects(shotRect()))
     {
         paintShot(&p);
     }
@@ -130,7 +158,7 @@ void CannonField::paintEvent(QPaintEvent *e)
         else
             paintCannon(&p,Qt::blue);
     }
-    if(updateR.intersects(targetRect()))
+    if(!gameEnded && updateR.intersects(targetRect()))
     {
         paintTarget(&p);
     }
@@ -155,7 +183,6 @@ const QRect barrelRect(33,-4,15,8);
 
 void CannonField::paintCannon(QPainter *p,Qt::GlobalColor color)
 {
-    qDebug() << color;
     QRect cr = cannonRect();
     QPixmap pix(cr.size());
     pix.fill(QColor(250,250,200));
@@ -204,6 +231,12 @@ QRect CannonField::targetRect() const
     r.moveCenter(QPoint(target.x(),height() - 1 - target.y()));
     return r;
 }
+
+bool CannonField::isShooting() const
+{
+    return autoShootTimer->isActive();
+}
+
 QSizePolicy CannonField::sizePolicy() const
 {
     return QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);

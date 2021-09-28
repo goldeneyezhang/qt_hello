@@ -2,11 +2,11 @@
 #define LCDRANGE_H
 
 
-#include <QVBoxLayout>
+#include <QWidget>
 class QSlider;
 class QLabel;
 
-class LCDRange:public QVBoxLayout
+class LCDRange:public QWidget
 {
     Q_OBJECT
 public:

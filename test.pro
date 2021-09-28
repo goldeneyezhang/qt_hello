@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     cannon.cpp \
+    gamebrd.cpp \
     lcdrange.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     cannon.h \
+    gamebrd.h \
     lcdrange.h \
     mainwindow.h \
     mywidget.h \

@@ -4,13 +4,14 @@
 #include <QLCDNumber>
 #include <QLabel>
 #include <QString>
+#include <QVBoxLayout>
 
-LCDRange::LCDRange(QWidget *parent):QVBoxLayout(parent)
+LCDRange::LCDRange(QWidget *parent):QWidget(parent)
 {
     init();
 }
 
-LCDRange::LCDRange(const char *s, QWidget *parent):QVBoxLayout(parent)
+LCDRange::LCDRange(const char *s, QWidget *parent):QWidget(parent)
 {
     init();
     setText(s);
@@ -27,12 +28,13 @@ void LCDRange::init()
     label = new QLabel( " " );
     label->setAlignment( Qt::AlignCenter );
 
-    this->addWidget(lcd);
-    this->addWidget(slider);
-    this->addWidget(label);
-
     connect(slider,SIGNAL(valueChanged(int)),lcd,SLOT(display(int)));
     connect( slider, SIGNAL(valueChanged(int)),SIGNAL(valueChanged(int)));
+
+    QVBoxLayout *l = new QVBoxLayout(this);
+    l->addWidget(lcd,1);
+    l->addWidget(slider);
+    l->addWidget(label);
 }
 
 void LCDRange::setValue(int value)

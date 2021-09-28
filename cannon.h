@@ -13,6 +13,8 @@ public:
 
     int angle() const {return ang;}
     int force() const {return f;}
+    bool gameOver() const {return gameEnded;}
+    bool isShooting() const;
 
 
 public slots:
@@ -20,6 +22,8 @@ public slots:
     void setForce(int newton);
     void shoot();
     void newTarget();
+    void setGameOver();
+    void restartGame();
 
 private slots:
     void moveShot();
@@ -30,6 +34,7 @@ signals:
     void missed();
     void angleChanged(int);
     void forceChanged(int);
+    void canShoot(bool);
 
 protected:
     void paintEvent(QPaintEvent *);
@@ -55,6 +60,8 @@ private:
     float shoot_f;
 
     QPoint target;
+
+    bool gameEnded;
 };
 
 #endif // CANNON_H

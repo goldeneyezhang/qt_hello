@@ -52,8 +52,8 @@ MyWidget::MyWidget(QWidget *parent) : QWidget(parent)
 
     QVBoxLayout *leftBox = new QVBoxLayout;
     grid->addLayout(leftBox,1,0);
-    leftBox->addLayout(angle,1);
-    leftBox->addLayout(force,2);
+    leftBox->addWidget(angle,1);
+    leftBox->addWidget(force,2);
 
     angle->setValue(60);
     force->setValue(25);
