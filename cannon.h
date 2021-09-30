@@ -15,7 +15,7 @@ public:
     int force() const {return f;}
     bool gameOver() const {return gameEnded;}
     bool isShooting() const;
-
+    QSize sizeHint() const;
 
 public slots:
     void setAngle(int degrees);
@@ -38,14 +38,20 @@ signals:
 
 protected:
     void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
 
 private:
     void paintShot(QPainter *);
     void paintTarget(QPainter *);
+    void paintBarrier(QPainter *);
     void paintCannon(QPainter *,Qt::GlobalColor color);
     QRect cannonRect() const;
     QRect shotRect() const;
     QRect targetRect() const;
+    QRect barrierRect() const;
+    bool barrelHit(const QPoint &) const;
 
     int ang;
     int f;
@@ -62,6 +68,7 @@ private:
     QPoint target;
 
     bool gameEnded;
+    bool barrelPressed;
 };
 
 #endif // CANNON_H

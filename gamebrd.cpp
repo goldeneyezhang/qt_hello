@@ -20,7 +20,7 @@ GameBoard::GameBoard(QWidget *parent) : QWidget(parent)
     angle->setRange(5,70);
 
     LCDRange *force = new LCDRange("FORCE",this);
-    force->setRange(10,50);
+    force->setRange(10,70);
 
     cannonField = new CannonField(this);
 

@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QDateTime>
 #include <stdlib.h>
+#include "QTransform"
 
 CannonField::CannonField(QWidget *parent) : QWidget(parent)
 {
@@ -28,6 +29,7 @@ CannonField::CannonField(QWidget *parent) : QWidget(parent)
     shoot_f = 0;
     target = QPoint(0,0);
     gameEnded = false;
+    barrelPressed = false;
     setPalette(QPalette(QColor(250,250,200)));
     setAutoFillBackground(true);
     newTarget();
@@ -121,7 +123,7 @@ void CannonField::moveShot()
         emit hit();
         emit canShoot(true);
     }
-    else if(shotR.x() > width() || shotR.y() > height()){
+    else if(shotR.x() > width() || shotR.y() > height() || shotR.intersects(barrierRect())){
         autoShootTimer->stop();
         emit missed();
         emit canShoot(true);
@@ -158,6 +160,8 @@ void CannonField::paintEvent(QPaintEvent *e)
         else
             paintCannon(&p,Qt::blue);
     }
+    if(updateR.intersects(barrierRect()))
+        paintBarrier(&p);
     if(!gameEnded && updateR.intersects(targetRect()))
     {
         paintTarget(&p);
@@ -177,8 +181,16 @@ void CannonField::paintTarget(QPainter *p)
     p->setPen(Qt::NoPen);
     p->drawRect(targetRect());
 }
-
 const QRect barrelRect(33,-4,15,8);
+
+void CannonField::paintBarrier( QPainter *p )
+{
+    p->setBrush(Qt::yellow );
+    p->setPen( Qt::black );
+    p->drawRect( barrierRect() );
+}
+
+
 
 
 void CannonField::paintCannon(QPainter *p,Qt::GlobalColor color)
@@ -241,3 +253,51 @@ QSizePolicy CannonField::sizePolicy() const
 {
     return QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 }
+
+void CannonField::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+    if(barrelHit((e->pos())))
+        barrelPressed=true;
+}
+
+void CannonField::mouseMoveEvent(QMouseEvent *e)
+{
+    if(!barrelPressed)
+        return;
+    QPoint pnt = e->pos();
+    if(pnt.x() <= 0)
+        pnt.setX(1);
+    if(pnt.y() >= height())
+        pnt.setY(height() - 1);
+    double rad = atan(((double)rect().bottom() - pnt.y())/pnt.x());
+    setAngle(qRound(rad*180/3.14159265));
+}
+
+void CannonField::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton)
+        barrelPressed = false;
+}
+QRect CannonField::barrierRect() const
+{
+    return QRect( 145, height() - 100, 15, 100 );
+}
+
+bool CannonField::barrelHit( const QPoint &p ) const
+{
+    QTransform mtx;
+    mtx.translate( 0, height() - 1 );
+    mtx.rotate( -ang );
+    mtx = mtx.inverted();
+   return barrelRect.contains( mtx.map(p) );
+
+}
+
+QSize CannonField::sizeHint() const
+{
+    return QSize( 400, 300 );
+}
+
+
